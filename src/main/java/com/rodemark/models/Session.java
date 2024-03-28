@@ -8,6 +8,7 @@ import lombok.Setter;
 import java.util.UUID;
 
 @Table(name = "sessions")
+@Entity
 @Getter
 @Setter
 public class Session {
@@ -17,6 +18,6 @@ public class Session {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private UserAccount userAccount;
 
 }

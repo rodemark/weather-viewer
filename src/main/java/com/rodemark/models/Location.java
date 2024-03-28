@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Table(name = "locations")
+@Entity
 @Getter
 @Setter
 public class Location extends BaseEntity{
@@ -25,5 +26,5 @@ public class Location extends BaseEntity{
 
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id")
-    private User user;
+    private UserAccount userAccount;
 }
