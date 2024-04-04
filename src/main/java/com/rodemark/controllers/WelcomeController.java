@@ -12,9 +12,9 @@ public class WelcomeController {
     public String welcome(@CookieValue(value = "session_id", defaultValue = "") String sessionUuid, Model model) {
         if (!sessionUuid.isEmpty()){
 
-            return "redirect:/main";
+            return "redirect:/";
         }
         model.addAttribute("location", new Location());
-        return "welcome";
+        return "main-not-auth";
     }
 }

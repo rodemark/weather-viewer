@@ -15,9 +15,8 @@ public class SpringSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .anyRequest().permitAll() // разрешаем доступ без аутентификации для всех запросов
+                        .anyRequest().permitAll()
                 );
         return http.build();
     }
 }
-
