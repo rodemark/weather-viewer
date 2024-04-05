@@ -16,14 +16,14 @@ public class ExistingAccountValidator implements Validator {
     }
     @Override
     public boolean supports(Class<?> clazz) {
-        return UserAccount.class.isAssignableFrom(clazz);
+        return UserAccount.class.equals(clazz);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
         UserAccount userAccount = (UserAccount) target;
-        if (userService.findByLoginAndPassword(userAccount) != null) {
-            errors.rejectValue("login", "", "Password or Login is incorrect!");
+        if (userService.findByLoginAndPassword(userAccount) == null) {
+            errors.rejectValue("password", "", "Password or Login is incorrect!");
         }
     }
 }

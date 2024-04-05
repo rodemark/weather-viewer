@@ -11,12 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class UserService {
     private final UserAccountRepository userAccountRepository;
-    private final BCryptPassword bCryptPassword;
 
     @Autowired
-    public UserService(UserAccountRepository userAccountRepository, BCryptPassword bCryptPassword) {
+    public UserService(UserAccountRepository userAccountRepository) {
         this.userAccountRepository = userAccountRepository;
-        this.bCryptPassword = bCryptPassword;
     }
 
     @Transactional
@@ -31,11 +29,11 @@ public class UserService {
     public UserAccount findByLoginAndPassword(UserAccount userAccount){
         String login = userAccount.getLogin();
         String password = userAccount.getPassword();
-        UserAccount userAccountByLogin = findByLogin(userAccount);
+        UserAccount foundedUserAccount = findByLogin(userAccount);
 
-        if (userAccountByLogin != null){
-            String encryptPassword = userAccountByLogin.getPassword();
-            if (bCryptPassword.isEncryptPassword(password, encryptPassword)){
+        if (foundedUserAccount != null){
+            String encryptPassword = foundedUserAccount.getPassword();
+            if (BCryptPassword.isEncryptPassword(password, encryptPassword)){
                 return userAccountRepository.findByLoginAndPassword(login, password).orElse(null);
             }
         }

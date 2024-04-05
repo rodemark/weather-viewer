@@ -3,7 +3,6 @@ package com.rodemark.controllers;
 import com.rodemark.models.UserAccount;
 import com.rodemark.services.SessionService;
 import com.rodemark.services.UserService;
-import com.rodemark.util.BCryptPassword;
 import com.rodemark.validators.ExistingAccountValidator;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,14 +22,12 @@ import java.util.UUID;
 public class AuthorizationController {
 
     private final UserService userService;
-    private final BCryptPassword bCryptPassword;
     private final ExistingAccountValidator existingAccountValidator;
     private final SessionService sessionService;
 
     @Autowired
-    public AuthorizationController(UserService userService, BCryptPassword bCryptPassword, ExistingAccountValidator existingAccountValidator, SessionService sessionService){
+    public AuthorizationController(UserService userService, ExistingAccountValidator existingAccountValidator, SessionService sessionService){
         this.userService = userService;
-        this.bCryptPassword = bCryptPassword;
         this.existingAccountValidator = existingAccountValidator;
         this.sessionService = sessionService;
     }
@@ -56,7 +53,7 @@ public class AuthorizationController {
         }
 
         UserAccount foundedUser = userService.findByLoginAndPassword(userAccount);
-        UUID uuid = sessionService.saveSessionAndGetUUID(userAccount);
+        UUID uuid = sessionService.saveSessionAndGetUUID(foundedUser);
 
         Cookie cookie = new Cookie("session_id", uuid.toString());
         cookie.setMaxAge((int) sessionService.getSESSION_TIME());
@@ -65,4 +62,12 @@ public class AuthorizationController {
         return "redirect:/home";
     }
 
+    @GetMapping("/logout")
+    public String logout(HttpServletResponse response){
+        Cookie cookie = new Cookie("session_id", "");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
+        return "redirect:/";
+    }
 }

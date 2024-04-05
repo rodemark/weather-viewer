@@ -14,13 +14,11 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class RegistrationController {
     private final UserService userService;
-    private final BCryptPassword bCryptPassword;
     private final UserValidator userValidator;
 
     @Autowired
-    public RegistrationController(UserService userService, BCryptPassword bCryptPassword, UserValidator userValidator){
+    public RegistrationController(UserService userService, UserValidator userValidator){
         this.userService = userService;
-        this.bCryptPassword = bCryptPassword;
         this.userValidator = userValidator;
     }
 
@@ -42,7 +40,7 @@ public class RegistrationController {
             return "registration";
         }
 
-        String encryptPassword = bCryptPassword.getEncryptPassword(userAccount.getPassword());
+        String encryptPassword = BCryptPassword.getEncryptPassword(userAccount.getPassword());
         userAccount.setPassword(encryptPassword);
         userService.save(userAccount);
 
