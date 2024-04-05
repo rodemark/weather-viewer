@@ -34,7 +34,7 @@ public class UserService {
         if (foundedUserAccount != null){
             String encryptPassword = foundedUserAccount.getPassword();
             if (BCryptPassword.isEncryptPassword(password, encryptPassword)){
-                return userAccountRepository.findByLoginAndPassword(login, password).orElse(null);
+                return userAccountRepository.findByLoginAndPassword(login, encryptPassword).orElse(null);
             }
         }
         return null;
