@@ -3,6 +3,7 @@ package com.rodemark.services;
 import com.rodemark.models.UserAccount;
 import com.rodemark.repositories.UserAccountRepository;
 import com.rodemark.util.BCryptPassword;
+import com.rodemark.util.CryptPassword;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,10 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class UserService {
     private final UserAccountRepository userAccountRepository;
+    private final CryptPassword cryptPassword;
 
     @Autowired
-    public UserService(UserAccountRepository userAccountRepository) {
+    public UserService(UserAccountRepository userAccountRepository, BCryptPassword cryptPassword) {
         this.userAccountRepository = userAccountRepository;
+        this.cryptPassword = cryptPassword;
     }
 
     @Transactional
@@ -33,7 +36,7 @@ public class UserService {
 
         if (foundedUserAccount != null){
             String encryptPassword = foundedUserAccount.getPassword();
-            if (BCryptPassword.isEncryptPassword(password, encryptPassword)){
+            if (cryptPassword.isEncryptPassword(password, encryptPassword)){
                 return userAccountRepository.findByLoginAndPassword(login, encryptPassword).orElse(null);
             }
         }

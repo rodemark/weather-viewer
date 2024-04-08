@@ -3,6 +3,7 @@ package com.rodemark.controllers;
 import com.rodemark.models.UserAccount;
 import com.rodemark.services.UserService;
 import com.rodemark.util.BCryptPassword;
+import com.rodemark.util.CryptPassword;
 import com.rodemark.validators.UserValidator;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,17 +16,19 @@ import org.springframework.web.bind.annotation.*;
 public class RegistrationController {
     private final UserService userService;
     private final UserValidator userValidator;
+    private final CryptPassword cryptPassword;
 
     @Autowired
-    public RegistrationController(UserService userService, UserValidator userValidator){
+    public RegistrationController(UserService userService, UserValidator userValidator, BCryptPassword cryptPassword){
         this.userService = userService;
         this.userValidator = userValidator;
+        this.cryptPassword = cryptPassword;
     }
 
     @GetMapping("/registration")
     public String registration(@CookieValue(value = "session_id", defaultValue = "") String session_id, Model model){
         if (!session_id.isEmpty()){
-            return "redirect:/";
+            return "redirect:/home";
         }
         model.addAttribute("userAccount", new UserAccount());
         return "registration";
@@ -40,7 +43,7 @@ public class RegistrationController {
             return "registration";
         }
 
-        String encryptPassword = BCryptPassword.getEncryptPassword(userAccount.getPassword());
+        String encryptPassword = cryptPassword.getEncryptPassword(userAccount.getPassword());
         userAccount.setPassword(encryptPassword);
         userService.save(userAccount);
 
