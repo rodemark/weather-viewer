@@ -2,6 +2,7 @@ package com.rodemark.api;
 
 import com.rodemark.api.models.Coordinates;
 import com.rodemark.api.models.Weather;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -37,7 +38,7 @@ public class ApiService {
         double latitude = coordinates.getLatitude();
         double longitude = coordinates.getLongitude();
 
-        String requestURI = String.format("%s?lat=%s&lon=%s&appid%s", API_URI, latitude, longitude, API_KEY);
+        String requestURI = String.format("%s?lat=%s&lon=%s&appid=%s", API_URI, latitude, longitude, API_KEY);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI(requestURI))
@@ -58,7 +59,7 @@ public class ApiService {
         Coordinates coordinates = new Coordinates();
 
         JSONObject jsonpObject = new JSONObject(response.body());
-        JSONObject jsonCoordinates = jsonpObject.getJSONObject("cord");
+        JSONObject jsonCoordinates = jsonpObject.getJSONObject("coord");
         double latitude = jsonCoordinates.getDouble("lat");
         double longitude = jsonCoordinates.getDouble("lon");
 
@@ -79,7 +80,8 @@ public class ApiService {
         double pressure = jsonObjectSecond.getDouble("pressure");
         double humidity = jsonObjectSecond.getDouble("humidity");
 
-        jsonObjectSecond = jsonpObject.getJSONObject("weather");
+        JSONArray weatherArray = jsonpObject.getJSONArray("weather");
+        jsonObjectSecond = weatherArray.getJSONObject(0);
 
         String description = jsonObjectSecond.getString("description");
 

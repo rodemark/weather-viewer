@@ -7,6 +7,7 @@ import lombok.Setter;
 @Setter
 public class Weather {
     private Coordinates coordinates;
+    // температура в кельвинах
     private double temp;
     private double pressure;
     private double humidity;
