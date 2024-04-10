@@ -4,6 +4,7 @@ import com.rodemark.api.models.Coordinates;
 import com.rodemark.api.models.Weather;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.URI;
@@ -12,11 +13,32 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+@Service
 public class ApiService {
     private final String API_KEY = "d85e195b5942ef6461aa1a292de5eae6";
     private final String API_URI = "https://api.openweathermap.org/data/2.5/weather";
 
     public Coordinates getCoordinatesByName(String name) throws URISyntaxException, IOException, InterruptedException {
+        HttpResponse<String> response = getResponseByName(name);
+
+        if (response.statusCode() == 200) {
+            return parseCoordinatesFromResponse(response);
+        } else {
+            throw new IOException("Error fetching coordinates: " + response.statusCode());
+        }
+    }
+
+    public Weather getWeatherByName(String name) throws IOException, InterruptedException, URISyntaxException {
+        HttpResponse<String> response = getResponseByName(name);
+
+        if (response.statusCode() == 200) {
+            return parseInformationAboutWeather(response);
+        } else {
+            throw new IOException("Error fetching coordinates: " + response.statusCode());
+        }
+    }
+
+    private HttpResponse<String> getResponseByName(String name) throws URISyntaxException, IOException, InterruptedException {
         String requestURI = String.format("%s?q=%s&appid=%s", API_URI, name, API_KEY);
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -25,13 +47,7 @@ public class ApiService {
                 .build();
 
         HttpClient client = HttpClient.newHttpClient();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        if (response.statusCode() == 200) {
-            return parseCoordinatesFromResponse(response);
-        } else {
-            throw new IOException("Error fetching coordinates: " + response.statusCode());
-        }
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
     public Weather getWeatherByCoordinates(Coordinates coordinates) throws IOException, InterruptedException, URISyntaxException {
