@@ -67,7 +67,7 @@ public class ApiService {
         if (response.statusCode() == 200) {
             return parseInformationAboutWeather(response);
         } else {
-            throw new IOException("Error fetching coordinates: " + response.statusCode());
+            throw new IOException("Error: " + response.statusCode());
         }
     }
 

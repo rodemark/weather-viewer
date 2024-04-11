@@ -14,17 +14,17 @@
             <img src="/icons/logo.png" alt="" width="30" height="24" class="d-inline-block align-text-top">
             Weather Service
         </a>
-
-        <form class="d-flex mx-auto" id="searchForm">
-            <input class="form-control me-3" type="search" id="cityInput" name="cityInput" placeholder="Search" aria-label="Search">
-                <a href="/addLocation" class="btn btn-outline-success">Search</a>
+        <form class="d-flex mx-auto" action="/search" method="get">
+            <input class="form-control me-3" type="search" id="cityName" name="cityName" placeholder="Search" aria-label="Search" required>
+            <button type="submit" class="btn btn-outline-success">Search</button>
         </form>
 
         <div class="d-flex ms-auto">
             <a href="/logout" class="btn btn-outline-dark me-2">Log out</a>
         </div>
-
     </div>
 </nav>
+
+
 </body>
 </html>
