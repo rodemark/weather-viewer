@@ -31,17 +31,19 @@
         <div class="col-md-6 mx-auto">
             <div class="card mt-5">
                 <div class="card-header">
-                    <h5 class="card-title">Weather in <span th:text="${weather.nameOfCity}"></span></h5>
+                    <h5 class="card-title">Weather in <span th:text="${weather.getNameOfCity()}, ${weather.getCountry()}"></span></h5>
                 </div>
-                <div class="card-body">
-                    <p>Temperature: <span th:text="${weather.temp}"></span> K</p>
-                    <p>Pressure: <span th:text="${weather.pressure}"></span> hPa</p>
-                    <p>Humidity: <span th:text="${weather.humidity}"></span>%</p>
-                    <p>Description: <span th:text="${weather.description}"></span></p>
-                </div>
+                    <div class="card-body">
+                        <p>Temperature: <span th:text="${weather.getTemp()}"></span> K</p>
+                        <p>Pressure: <span th:text="${weather.getPressure()}"></span> hPa</p>
+                        <p>Humidity: <span th:text="${weather.getHumidity()}"></span>%</p>
+                        <p>Description: <span th:text="${weather.getDescription()}"></span></p>
+                    </div>
                 <div class="card-footer">
-                    <form class="d-flex mx-auto" action="/locations/add" method="POST">
-                        <button type="submit" class="btn btn-outline-dark me-2">Add to Favorites</button>
+<!--                    <input type="hidden" name="_csrf" value="${_csrf.token}"/>-->
+
+                    <form class="d-flex mx-auto" action="/locations/add" method="post">
+                        <button type="submit" class="btn btn-outline-dark me-2">Add to Favorites </button>
                     </form>
 
                 </div>

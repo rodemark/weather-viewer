@@ -9,7 +9,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URLEncoder;
@@ -19,18 +18,17 @@ import java.nio.charset.StandardCharsets;
 public class WeatherController {
 
     private final ApiService apiService;
-    private final LocationService locationService;
-    private final SessionService sessionService;
 
     @Autowired
     public WeatherController(ApiService apiService, LocationService locationService, SessionService sessionService){
         this.apiService = apiService;
-        this.locationService = locationService;
-        this.sessionService = sessionService;
     }
 
     @GetMapping("/home")
-    public String home() {
+    public String home(@CookieValue(value = "session_id", defaultValue = "") String session_id) {
+        if (session_id.isEmpty()){
+            return "redirect:/";
+        }
         return "home";
     }
 
@@ -42,47 +40,16 @@ public class WeatherController {
     @GetMapping("/search")
     public String searchCityByName(@RequestParam("cityName") String cityName, Model model) {
         if (cityName.isEmpty()){
-            return "redirect:/home";
+            return "/home";
         }
         try {
             Weather weather = apiService.getWeatherByName(cityName);
             model.addAttribute("weather", weather);
         }
         catch (Exception e){
-            return "redirect:/home";
+            return "/home";
         }
 
-        return "redirect:/locations/add?cityName=" + URLEncoder.encode(cityName, StandardCharsets.UTF_8);
+        return "redirect:/locations/show-city?cityName=" + URLEncoder.encode(cityName, StandardCharsets.UTF_8);
     }
-
-    @PostMapping("/locations/add")
-    public String addNewLocation(@ModelAttribute("weather") Weather weather,
-                                 @CookieValue(value = "session_id", defaultValue = "") String session_id,
-                                 BindingResult bindingResult, Model model) {
-        System.out.println("Received POST request to add new location with cityName: " + weather.getNameOfCity());
-        UserAccount user = sessionService.getUserByUUID(session_id);
-        locationService.saveLocation(weather, user);
-        return "redirect:/home";
-    }
-
-    @GetMapping("/error")
-    public String getError(){
-        return "error";
-    }
-
-    @GetMapping("/locations/add")
-    public String addNewLocation(@RequestParam(value = "cityName", required = false) String cityName, Model model) {
-        if (cityName == null || cityName.isEmpty()) {
-            return "redirect:/home";
-        }
-        try {
-            Weather weather = apiService.getWeatherByName(cityName);
-            model.addAttribute("weather", weather);
-            model.addAttribute("cityName", cityName);
-            return "found-city";
-        } catch (Exception e) {
-            return "redirect:/search?cityName=" + URLEncoder.encode(cityName, StandardCharsets.UTF_8);
-        }
-    }
-
 }
