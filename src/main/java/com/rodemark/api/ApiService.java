@@ -2,6 +2,7 @@ package com.rodemark.api;
 
 import com.rodemark.api.models.Coordinates;
 import com.rodemark.api.models.Weather;
+import com.rodemark.models.Location;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,8 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ApiService {
@@ -28,14 +31,53 @@ public class ApiService {
         }
     }
 
-    public Weather getWeatherByName(String name) throws IOException, InterruptedException, URISyntaxException {
-        HttpResponse<String> response = getResponseByName(name);
-
-        if (response.statusCode() == 200) {
+    public Weather getWeatherByName(String name){
+        try {
+            HttpResponse<String> response = getResponseByName(name);
             return parseInformationAboutWeather(response);
-        } else {
-            throw new IOException("Error fetching coordinates: " + response.statusCode());
         }
+        catch (Exception exception){
+            exception.printStackTrace();
+        }
+        return null;
+    }
+
+    public Weather getWeatherByCoordinates(Coordinates coordinates) {
+        double latitude = coordinates.getLatitude();
+        double longitude = coordinates.getLongitude();
+
+        String requestURI = String.format("%s?lat=%s&lon=%s&appid=%s", API_URI, latitude, longitude, API_KEY);
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(new URI(requestURI))
+                    .GET()
+                    .build();
+
+            HttpClient client = HttpClient.newHttpClient();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            return parseInformationAboutWeather(response);
+        }
+        catch (Exception exception){
+            exception.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<Weather> getWeathersByLocations(List<Location> locationList){
+        try {
+            List<Weather> weatherList = new ArrayList<>();
+            for (Location location : locationList){
+                Coordinates coordinates = new Coordinates();
+                coordinates.setLatitude(location.getLatitude());
+                coordinates.setLongitude(location.getLongitude());
+                weatherList.add(getWeatherByCoordinates(coordinates));
+            }
+            return weatherList;
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
     }
 
     private HttpResponse<String> getResponseByName(String name) throws URISyntaxException, IOException, InterruptedException {
@@ -50,26 +92,6 @@ public class ApiService {
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
-    public Weather getWeatherByCoordinates(Coordinates coordinates) throws IOException, InterruptedException, URISyntaxException {
-        double latitude = coordinates.getLatitude();
-        double longitude = coordinates.getLongitude();
-
-        String requestURI = String.format("%s?lat=%s&lon=%s&appid=%s", API_URI, latitude, longitude, API_KEY);
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(requestURI))
-                .GET()
-                .build();
-
-        HttpClient client = HttpClient.newHttpClient();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        if (response.statusCode() == 200) {
-            return parseInformationAboutWeather(response);
-        } else {
-            throw new IOException("Error: " + response.statusCode());
-        }
-    }
 
     private Coordinates parseCoordinatesFromResponse(HttpResponse<String> response){
         Coordinates coordinates = new Coordinates();

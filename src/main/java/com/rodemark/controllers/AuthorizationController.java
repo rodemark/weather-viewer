@@ -29,16 +29,22 @@ public class AuthorizationController {
         this.sessionService = sessionService;
     }
 
-    @GetMapping("/authorization")
-    public String authorization(@CookieValue(value = "session_id", defaultValue = "") String session_id, Model model){
-        if (!session_id.isEmpty()){
-            return "redirect:/home";
+    @GetMapping("/login")
+    public String authorization(@CookieValue(value = "session_id", defaultValue = "") String sessionUUID, Model model){
+        if (sessionUUID.isEmpty() || sessionService.getSessionByUUID(sessionUUID) == null){
+            model.addAttribute("userAccount", new UserAccount());
+            return "authorization";
         }
-        model.addAttribute("userAccount", new UserAccount());
-        return "authorization";
+
+        if (!sessionService.isOver(sessionUUID)){
+            return "redirect:/home";
+        } else {
+            model.addAttribute("userAccount", new UserAccount());
+            return "authorization";
+        }
     }
 
-    @PostMapping("/authorization")
+    @PostMapping("/login")
     public String authorization(@ModelAttribute("userAccount") @Valid UserAccount userAccount, BindingResult bindingResult, HttpServletResponse response){
 
         if (bindingResult.hasErrors()){
@@ -59,8 +65,9 @@ public class AuthorizationController {
         return "redirect:/home";
     }
 
-    @GetMapping("/logout")
+    @GetMapping("/logoff")
     public String logout(@CookieValue(name = "session_id", defaultValue = "") String sessionID, HttpServletResponse response){
+        System.out.println("Logging out, session ID: " + sessionID);
         sessionService.deleteSession(sessionID);
         response.addCookie(sessionService.getCleanCookie());
         return "redirect:/";

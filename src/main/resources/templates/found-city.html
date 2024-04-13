@@ -14,14 +14,16 @@
             <img src="/icons/logo.png" alt="" width="30" height="24" class="d-inline-block align-text-top">
             Weather Service
         </a>
-        <form class="d-flex mx-auto" action="/search" method="GET">
+        <form class="d-flex mx-auto" action="/search" method="get">
             <input class="form-control me-3" type="search" id="cityName" name="cityName" placeholder="Search" aria-label="Search" required>
             <button type="submit" class="btn btn-outline-success">Search</button>
         </form>
 
-        <div class="d-flex ms-auto">
-            <a href="/logout" class="btn btn-outline-dark me-2">Log out</a>
-        </div>
+        <div class="navbar-text me-2"> <span th:text="${login}"></span></div>
+
+        <form class="d-flex ms-auto" action="/logoff" method="get">
+            <button type="submit" class="btn btn-outline-dark me-2">Log out</button>
+        </form>
     </div>
 </nav>
 
@@ -31,26 +33,39 @@
         <div class="col-md-6 mx-auto">
             <div class="card mt-5">
                 <div class="card-header">
-                    <h5 class="card-title">Weather in <span th:text="${weather.getNameOfCity()}, ${weather.getCountry()}"></span></h5>
+                    <h5 class="card-title">Weather in <span th:text="${weather.nameOfCity + ', ' + weather.country}"></span></h5>
                 </div>
-                    <div class="card-body">
-                        <p>Temperature: <span th:text="${weather.getTemp()}"></span> K</p>
-                        <p>Pressure: <span th:text="${weather.getPressure()}"></span> hPa</p>
-                        <p>Humidity: <span th:text="${weather.getHumidity()}"></span>%</p>
-                        <p>Description: <span th:text="${weather.getDescription()}"></span></p>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <p>Temperature: <span th:text="${weather.temp}"></span> K</p>
+                            <p>Pressure: <span th:text="${weather.pressure}"></span> hPa</p>
+                            <p>Humidity: <span th:text="${weather.humidity}"></span>%</p>
+                        </div>
+                        <div class="col">
+                            <p>Wind Speed: <span th:text="${weather.windSpeed}"></span> m/s</p>
+                            <p>Wind Direction: <span th:text="${weather.windDirection}"></span>°</p>
+                            <p>Description: <span th:text="${weather.description}"></span></p>
+                        </div>
                     </div>
-                <div class="card-footer">
-<!--                    <input type="hidden" name="_csrf" value="${_csrf.token}"/>-->
+                </div>
+                <div class="card-footer d-flex justify-content-center">
+                    <form action="/locations/add" method="post">
+                        <input type="hidden" name="cityName" th:value="${weather.nameOfCity}">
+                        <input type="hidden" name="latitude" th:value="${weather.coordinates.latitude}">
+                        <input type="hidden" name="longitude" th:value="${weather.coordinates.longitude}">
 
-                    <form class="d-flex mx-auto" action="/locations/add" method="post">
-                        <button type="submit" class="btn btn-outline-dark me-2">Add to Favorites </button>
+                        <button type="submit">Add to Favorites</button>
                     </form>
-
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+
+
+
 
 </body>
 </html>

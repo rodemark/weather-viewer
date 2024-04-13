@@ -26,10 +26,7 @@ public class RegistrationController {
     }
 
     @GetMapping("/registration")
-    public String registration(@CookieValue(value = "session_id", defaultValue = "") String session_id, Model model){
-        if (!session_id.isEmpty()){
-            return "redirect:/home";
-        }
+    public String registration(Model model){
         model.addAttribute("userAccount", new UserAccount());
         return "registration";
     }
@@ -47,6 +44,6 @@ public class RegistrationController {
         userAccount.setPassword(encryptPassword);
         userService.save(userAccount);
 
-        return "redirect:/authorization";
+        return "redirect:/login";
     }
 }

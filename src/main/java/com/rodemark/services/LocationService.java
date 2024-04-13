@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class LocationService {
     private final LocationRepository locationRepository;
@@ -26,6 +28,10 @@ public class LocationService {
         location.setUserAccount(userAccount);
 
         locationRepository.save(location);
+    }
+
+    public List<Location> getLocations(UserAccount userAccount){
+        return locationRepository.findByUserAccount(userAccount);
     }
 
 }

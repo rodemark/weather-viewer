@@ -2,6 +2,7 @@ package com.rodemark.controllers;
 
 import com.rodemark.api.ApiService;
 import com.rodemark.api.models.Weather;
+import com.rodemark.models.Location;
 import com.rodemark.models.UserAccount;
 import com.rodemark.services.LocationService;
 import com.rodemark.services.SessionService;
@@ -13,22 +14,36 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Controller
 public class WeatherController {
 
     private final ApiService apiService;
+    private final SessionService sessionService;
+    private final LocationService locationService;
 
     @Autowired
-    public WeatherController(ApiService apiService, LocationService locationService, SessionService sessionService){
+    public WeatherController(ApiService apiService, LocationService locationService, SessionService sessionService, SessionService sessionService1, LocationService locationService1){
         this.apiService = apiService;
+        this.sessionService = sessionService1;
+        this.locationService = locationService1;
     }
 
     @GetMapping("/home")
-    public String home(@CookieValue(value = "session_id", defaultValue = "") String session_id) {
-        if (session_id.isEmpty()){
+    public String home(@CookieValue(value = "session_id", defaultValue = "") String sessionUUID, Model model) {
+        if (sessionUUID.isEmpty()){
             return "redirect:/";
         }
+        UserAccount userAccount = sessionService.getUserByUUID(sessionUUID);
+        if (userAccount == null) {
+            return "redirect:/login";
+        }
+        List<Location> locationsList = locationService.getLocations(userAccount);
+        List<Weather> weathersList = apiService.getWeathersByLocations(locationsList);
+
+        model.addAttribute("weathersList", weathersList);
+        model.addAttribute("login", userAccount.getLogin());
         return "home";
     }
 
@@ -42,13 +57,14 @@ public class WeatherController {
         if (cityName.isEmpty()){
             return "/home";
         }
-        try {
-            Weather weather = apiService.getWeatherByName(cityName);
-            model.addAttribute("weather", weather);
-        }
-        catch (Exception e){
+
+        Weather weather = apiService.getWeatherByName(cityName);
+
+        if (weather == null) {
             return "/home";
         }
+
+        model.addAttribute("weather", weather);
 
         return "redirect:/locations/show-city?cityName=" + URLEncoder.encode(cityName, StandardCharsets.UTF_8);
     }
