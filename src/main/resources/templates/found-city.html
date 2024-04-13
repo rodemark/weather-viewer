@@ -38,13 +38,13 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <p>Temperature: <span th:text="${weather.temp}"></span> K</p>
+                            <p>Temperature: <span th:text="${weather.temp}"></span>°C</p>
                             <p>Pressure: <span th:text="${weather.pressure}"></span> hPa</p>
                             <p>Humidity: <span th:text="${weather.humidity}"></span>%</p>
                         </div>
                         <div class="col">
                             <p>Wind Speed: <span th:text="${weather.windSpeed}"></span> m/s</p>
-                            <p>Wind Direction: <span th:text="${weather.windDirection}"></span>°</p>
+                            <p>Wind Direction: <span th:text="${weather.windDirection}"></span></p>
                             <p>Description: <span th:text="${weather.description}"></span></p>
                         </div>
                     </div>
@@ -55,7 +55,7 @@
                         <input type="hidden" name="latitude" th:value="${weather.coordinates.latitude}">
                         <input type="hidden" name="longitude" th:value="${weather.coordinates.longitude}">
 
-                        <button type="submit">Add to Favorites</button>
+                        <button type="submit" class="btn btn-outline-success">Add to Favorites</button>
                     </form>
                 </div>
             </div>

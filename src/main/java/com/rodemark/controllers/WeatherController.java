@@ -2,6 +2,7 @@ package com.rodemark.controllers;
 
 import com.rodemark.api.ApiService;
 import com.rodemark.api.models.Weather;
+import com.rodemark.api.models.WeatherFromApi;
 import com.rodemark.models.Location;
 import com.rodemark.models.UserAccount;
 import com.rodemark.services.LocationService;
@@ -58,13 +59,13 @@ public class WeatherController {
             return "/home";
         }
 
-        Weather weather = apiService.getWeatherByName(cityName);
+        WeatherFromApi weatherFromApi = apiService.getWeatherByName(cityName);
 
-        if (weather == null) {
-            return "/home";
+        if (weatherFromApi == null) {
+            return "redirect:/home";
         }
 
-        model.addAttribute("weather", weather);
+        model.addAttribute("weather", weatherFromApi);
 
         return "redirect:/locations/show-city?cityName=" + URLEncoder.encode(cityName, StandardCharsets.UTF_8);
     }

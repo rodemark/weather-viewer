@@ -7,14 +7,12 @@ import lombok.Setter;
 @Setter
 public class Weather {
     private Coordinates coordinates;
-
-    // температура в кельвинах
-    private double temp;
-    private double pressure;
-    private double humidity;
+    private int temp;
+    private int pressure;
+    private int humidity;
     private String description;
-    private double windSpeed;
-    private double windDirection;
+    private int windSpeed;
+    private String windDirection;
     private String country;
     private String nameOfCity;
 }

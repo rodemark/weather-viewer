@@ -1,8 +1,10 @@
 package com.rodemark.controllers;
 
 import com.rodemark.api.ApiService;
+import com.rodemark.api.WeatherService;
 import com.rodemark.api.models.Coordinates;
 import com.rodemark.api.models.Weather;
+import com.rodemark.api.models.WeatherFromApi;
 import com.rodemark.models.UserAccount;
 import com.rodemark.services.LocationService;
 import com.rodemark.services.SessionService;
@@ -36,19 +38,19 @@ public class LocationController {
                                  @RequestParam("longitude") double longitude, HttpServletResponse response,
                                  @CookieValue(value = "session_id", defaultValue = "") String session_id) {
 
-        UserAccount user = sessionService.getUserByUUID(session_id);
-        response.addCookie(sessionService.getCleanCookie());
+        UserAccount userAccount = sessionService.getUserByUUID(session_id);
+//        response.addCookie(sessionService.getCleanCookie());
 
-        if (user == null) return "redirect:/login";
+        if (userAccount == null) return "redirect:/login";
 
-        Weather weather = new Weather();
-        weather.setNameOfCity(cityName);
+        WeatherFromApi weatherFromApi = new WeatherFromApi();
+        weatherFromApi.setNameOfCity(cityName);
         Coordinates coordinates = new Coordinates();
         coordinates.setLatitude(latitude);
         coordinates.setLongitude(longitude);
-        weather.setCoordinates(coordinates);
+        weatherFromApi.setCoordinates(coordinates);
 
-        locationService.saveLocation(weather, user);
+        locationService.saveLocation(weatherFromApi, userAccount);
 
         return "redirect:/home";
     }
@@ -60,14 +62,39 @@ public class LocationController {
             return "redirect:/home";
         }
 
-        Weather weather = apiService.getWeatherByName(cityName);
+        WeatherFromApi weatherFromApi = apiService.getWeatherByName(cityName);
 
-        if (weather == null){
+        if (weatherFromApi == null){
             return "redirect:/search?cityName=" + URLEncoder.encode(cityName, StandardCharsets.UTF_8);
         }
+
+        Weather weather = WeatherService.weatherTransfer(weatherFromApi);
 
         model.addAttribute("weather", weather);
         model.addAttribute("login", sessionService.getUserByUUID(session_id).getLogin());
         return "found-city";
+    }
+
+    @PostMapping("/locations/delete")
+    public String deleteLocation(@CookieValue(value = "session_id", defaultValue = "") String sessionUUID,
+                                 @RequestParam("cityName") String cityName, @RequestParam("latitude") double latitude,
+                                 @RequestParam("longitude") double longitude){
+
+        UserAccount userAccount = sessionService.getUserByUUID(sessionUUID);
+        if (userAccount == null) return "redirect:/login";
+        WeatherFromApi weatherFromApi = new WeatherFromApi();
+
+        Coordinates coordinates = new Coordinates();
+        coordinates.setLongitude(longitude);
+        coordinates.setLatitude(latitude);
+
+        weatherFromApi.setCoordinates(coordinates);
+        weatherFromApi.setNameOfCity(cityName);
+
+        System.out.println("Deleting location: " + cityName + ", Latitude: " + latitude + ", Longitude: " + longitude);
+
+        locationService.deleteLocation(weatherFromApi, userAccount);
+
+        return "redirect:/home";
     }
 }

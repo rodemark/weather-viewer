@@ -31,9 +31,9 @@
             Weather Service
         </a>
 
-        <form class="d-flex mx-auto">
-            <input class="form-control me-3" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success" type="submit">Search</button>
+        <form class="d-flex mx-auto" action="/search" method="get">
+            <input class="form-control me-3" type="search" id="cityName" name="cityName" placeholder="Search" aria-label="Search" required>
+            <button type="submit" class="btn btn-outline-success">Search</button>
         </form>
 
         <div class="d-flex ms-auto">
