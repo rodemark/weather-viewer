@@ -65,8 +65,12 @@ public class WeatherController {
             return "redirect:/home";
         }
 
+
         model.addAttribute("weather", weatherFromApi);
 
-        return "redirect:/locations/show-city?cityName=" + URLEncoder.encode(cityName, StandardCharsets.UTF_8);
+        return "redirect:/locations/show-city?cityName=" +
+                URLEncoder.encode(cityName, StandardCharsets.UTF_8) +
+                "&latitude=" + weatherFromApi.getCoordinates().getLatitude() +
+                "&longitude=" + weatherFromApi.getCoordinates().getLongitude();
     }
 }

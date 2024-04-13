@@ -36,9 +36,9 @@ public class LocationController {
     @PostMapping("/locations/add")
     public String addNewLocation(@RequestParam("cityName") String cityName, @RequestParam("latitude") double latitude,
                                  @RequestParam("longitude") double longitude, HttpServletResponse response,
-                                 @CookieValue(value = "session_id", defaultValue = "") String session_id) {
+                                 @CookieValue(value = "session_id", defaultValue = "") String sessionUUID) {
 
-        UserAccount userAccount = sessionService.getUserByUUID(session_id);
+        UserAccount userAccount = sessionService.getUserByUUID(sessionUUID);
 //        response.addCookie(sessionService.getCleanCookie());
 
         if (userAccount == null) return "redirect:/login";
@@ -56,18 +56,25 @@ public class LocationController {
     }
 
     @GetMapping("/locations/show-city")
-    public String showFoundLocation(@RequestParam(value = "cityName", required = false) String cityName,
+    public String showFoundLocation(@RequestParam("cityName") String cityName, @RequestParam("latitude") double latitude,
+                                    @RequestParam("longitude") double longitude,
                                     @CookieValue(value = "session_id", defaultValue = "") String session_id, Model model) {
         if (cityName == null || cityName.isEmpty()) {
             return "redirect:/home";
         }
 
-        WeatherFromApi weatherFromApi = apiService.getWeatherByName(cityName);
+        Coordinates coordinates = new Coordinates();
+        coordinates.setLatitude(latitude);
+        coordinates.setLongitude(longitude);
+
+        WeatherFromApi weatherFromApi = apiService.getWeatherByCoordinates(coordinates);
+
 
         if (weatherFromApi == null){
             return "redirect:/search?cityName=" + URLEncoder.encode(cityName, StandardCharsets.UTF_8);
         }
 
+        weatherFromApi.setCoordinates(coordinates);
         Weather weather = WeatherService.weatherTransfer(weatherFromApi);
 
         model.addAttribute("weather", weather);

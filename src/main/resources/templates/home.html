@@ -16,10 +16,6 @@
         </a>
         <form class="d-flex mx-auto" action="/search" method="get">
             <input class="form-control me-3" type="search" id="cityName" name="cityName" placeholder="Search" aria-label="Search" required>
-
-            <input type="hidden" name="latitude" th:value="${weather.coordinates.latitude}">
-            <input type="hidden" name="longitude" th:value="${weather.coordinates.longitude}">
-
             <button type="submit" class="btn btn-outline-success">Search</button>
         </form>
 

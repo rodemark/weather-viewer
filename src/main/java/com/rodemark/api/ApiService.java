@@ -61,7 +61,9 @@ public class ApiService {
                 Coordinates coordinates = new Coordinates();
                 coordinates.setLatitude(location.getLatitude());
                 coordinates.setLongitude(location.getLongitude());
-                weathesList.add(WeatherService.weatherTransfer(getWeatherByCoordinates(coordinates)));
+                Weather weather = WeatherService.weatherTransfer(getWeatherByCoordinates(coordinates));
+                weather.setCoordinates(coordinates);
+                weathesList.add(weather);
             }
             return weathesList;
         }
