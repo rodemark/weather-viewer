@@ -38,6 +38,7 @@ public class RegistrationController {
         if (!sessionService.isOver(sessionUUID)){
             return "redirect:/home";
         } else {
+            sessionService.deleteSession(sessionUUID);
             model.addAttribute("userAccount", new UserAccount());
             return "registration";
         }

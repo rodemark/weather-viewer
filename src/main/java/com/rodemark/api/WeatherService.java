@@ -13,8 +13,8 @@ public class WeatherService {
         weather.setDescription(weatherFromApi.getDescription());
         weather.setCountry(weatherFromApi.getCountry());
         weather.setNameOfCity(weatherFromApi.getNameOfCity());
-        weather.setTemp(conversionToCelsius(weatherFromApi.getTemp()));
-        weather.setPressure((int) weatherFromApi.getPressure());
+        weather.setTemp(conversionTemperature(weatherFromApi.getTemp()));
+        weather.setPressure(conversionPressure(weatherFromApi.getPressure()));
         weather.setWindDirection(translationToCardinalDirections(weatherFromApi.getWindDirection()));
         weather.setWindSpeed((int) weatherFromApi.getWindSpeed());
         weather.setHumidity((int) weatherFromApi.getHumidity());
@@ -23,19 +23,18 @@ public class WeatherService {
     }
 
 
-    /*
-        на вход получаем температуру в кельвинах
-        на выходе округленную до целого в градусах цельсия
-     */
-    private static int conversionToCelsius(double temp){
+    private static int conversionTemperature(double temp){
         temp -= 273;
 
         return (int) Math.round(temp);
     }
 
-    private static String translationToCardinalDirections(double deg) {
-//        deg = (deg % 360 + 360) % 360;
+    private static int conversionPressure(double pressure){
+        double k = 0.750061683;
+        return (int) Math.round(pressure * k);
+    }
 
+    private static String translationToCardinalDirections(double deg) {
         if ((deg >= 11.25 && deg < 33.75) || (deg >= 348.75 && deg <= 360)) {
             return "North-Northeast";
         } else if (deg >= 33.75 && deg < 56.25) {

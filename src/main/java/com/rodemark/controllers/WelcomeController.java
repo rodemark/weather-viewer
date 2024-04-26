@@ -24,6 +24,9 @@ public class WelcomeController {
         if (!sessionService.isOver(sessionUUID)){
             return "redirect:/home";
         }
+        else{
+            sessionService.deleteSession(sessionUUID);
+        }
 
         return "main-not-auth";
     }

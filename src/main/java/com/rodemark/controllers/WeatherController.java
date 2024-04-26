@@ -65,7 +65,6 @@ public class WeatherController {
             return "redirect:/home";
         }
 
-
         model.addAttribute("weather", weatherFromApi);
 
         return "redirect:/locations/show-city?cityName=" +

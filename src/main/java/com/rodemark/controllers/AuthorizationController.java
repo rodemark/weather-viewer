@@ -11,7 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.UUID;
 
@@ -30,7 +33,8 @@ public class AuthorizationController {
     }
 
     @GetMapping("/login")
-    public String authorization(@CookieValue(value = "session_id", defaultValue = "") String sessionUUID, Model model){
+    public String authorization(@CookieValue(value = "session_id", defaultValue = "") String sessionUUID,
+                                Model model, HttpServletResponse response){
         if (sessionUUID.isEmpty() || sessionService.getSessionByUUID(sessionUUID) == null){
             model.addAttribute("userAccount", new UserAccount());
             return "authorization";
@@ -39,6 +43,7 @@ public class AuthorizationController {
         if (!sessionService.isOver(sessionUUID)){
             return "redirect:/home";
         } else {
+            sessionService.deleteSession(sessionUUID);
             model.addAttribute("userAccount", new UserAccount());
             return "authorization";
         }
@@ -57,6 +62,7 @@ public class AuthorizationController {
 
         UserAccount foundedUser = userService.findByLoginAndPassword(userAccount);
         UUID uuid = sessionService.saveSessionAndGetUUID(foundedUser);
+        response.addCookie(sessionService.getCleanCookie());
 
         Cookie cookie = new Cookie("session_id", uuid.toString());
         cookie.setMaxAge((int) sessionService.getSESSION_TIME());

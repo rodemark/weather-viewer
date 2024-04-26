@@ -8,7 +8,6 @@ import com.rodemark.api.models.WeatherFromApi;
 import com.rodemark.models.UserAccount;
 import com.rodemark.services.LocationService;
 import com.rodemark.services.SessionService;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,11 +34,10 @@ public class LocationController {
 
     @PostMapping("/locations/add")
     public String addNewLocation(@RequestParam("cityName") String cityName, @RequestParam("latitude") double latitude,
-                                 @RequestParam("longitude") double longitude, HttpServletResponse response,
+                                 @RequestParam("longitude") double longitude,
                                  @CookieValue(value = "session_id", defaultValue = "") String sessionUUID) {
 
         UserAccount userAccount = sessionService.getUserByUUID(sessionUUID);
-//        response.addCookie(sessionService.getCleanCookie());
 
         if (userAccount == null) return "redirect:/login";
 

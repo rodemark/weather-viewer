@@ -10,8 +10,8 @@
 
 <nav class="navbar navbar-light bg-light">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/home">
-            <img src="/icons/logo.png" alt="" width="30" height="24" class="d-inline-block align-text-top">
+        <a class="navbar-brand" href="/">
+            <img src="/static/logo.png" alt="" width="30" height="24" class="d-inline-block align-text-top">
             Weather Service
         </a>
         <form class="d-flex mx-auto" action="/search" method="get">
@@ -39,7 +39,7 @@
                     <div class="row">
                         <div class="col">
                             <p>Temperature: <span th:text="${weather.temp}"></span>°C</p>
-                            <p>Pressure: <span th:text="${weather.pressure}"></span> hPa</p>
+                            <p>Pressure: <span th:text="${weather.pressure}"></span> mm Hg</p>
                             <p>Humidity: <span th:text="${weather.humidity}"></span>%</p>
                         </div>
                         <div class="col">
