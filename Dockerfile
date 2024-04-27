@@ -1,4 +1,4 @@
 FROM openjdk:21.0.2
-ARG JAR_FILE=*.jar
-COPY ${JAR_FILE} application.jar
-ENTRYPOINT ["java", "-jar", "application.jar"]
+WORKDIR /app
+COPY ./target/weather-viewer-1.0.0.jar /app
+CMD ["java", "-jar", "weather-viewer-1.0.0.jar"]

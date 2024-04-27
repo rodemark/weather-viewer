@@ -19,7 +19,7 @@ import java.util.List;
 
 @Service
 public class ApiService {
-    private final String API_KEY = "d85e195b5942ef6461aa1a292de5eae6";
+    private final String API_KEY = "API_KEY";
     private final String API_URI = "https://api.openweathermap.org/data/2.5/weather";
 
     public WeatherFromApi getWeatherByName(String name){
