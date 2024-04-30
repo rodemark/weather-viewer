@@ -1,5 +1,6 @@
 package com.rodemark.controllers;
 
+import com.rodemark.DTO.UserDTO;
 import com.rodemark.models.UserAccount;
 import com.rodemark.services.SessionService;
 import com.rodemark.services.UserService;
@@ -31,7 +32,7 @@ public class RegistrationController {
     @GetMapping("/registration")
     public String registration(@CookieValue(value = "session_id", defaultValue = "") String sessionUUID, Model model){
         if (sessionUUID.isEmpty() || sessionService.getSessionByUUID(sessionUUID) == null){
-            model.addAttribute("userAccount", new UserAccount());
+            model.addAttribute("userAccount", new UserDTO());
             return "registration";
         }
 
@@ -39,22 +40,26 @@ public class RegistrationController {
             return "redirect:/home";
         } else {
             sessionService.deleteSession(sessionUUID);
-            model.addAttribute("userAccount", new UserAccount());
+            model.addAttribute("userAccount", new UserDTO());
             return "registration";
         }
     }
 
     @PostMapping("/registration")
-    public String registration(@ModelAttribute @Valid UserAccount userAccount, @RequestParam("confirm_password") String confirmPassword, BindingResult bindingResult){
-        userValidator.validate(userAccount, bindingResult);
-        userValidator.validatePassword(userAccount.getPassword(), confirmPassword, bindingResult);
+    public String registration(@ModelAttribute("userAccount") @Valid UserDTO userDTO, BindingResult bindingResult){
+        userValidator.validate(userDTO, bindingResult);
+        userValidator.validatePassword(userDTO.getPassword(), userDTO.getConfirmPassword(), bindingResult);
 
         if (bindingResult.hasErrors()){
             return "registration";
         }
 
-        String encryptPassword = cryptPassword.getEncryptPassword(userAccount.getPassword());
-        userAccount.setPassword(encryptPassword);
+        String encryptPassword = cryptPassword.getEncryptPassword(userDTO.getPassword());
+        userDTO.setPassword(encryptPassword);
+        UserAccount userAccount = new UserAccount();
+        userAccount.setLogin(userDTO.getLogin());
+        userAccount.setPassword(userDTO.getPassword());
+
         userService.save(userAccount);
 
         return "redirect:/login";

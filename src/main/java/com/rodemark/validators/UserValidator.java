@@ -1,5 +1,6 @@
 package com.rodemark.validators;
 
+import com.rodemark.DTO.UserDTO;
 import com.rodemark.models.UserAccount;
 import com.rodemark.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,8 @@ public class UserValidator implements Validator {
 
     @Override
     public void validate(Object target, Errors errors) {
-        UserAccount userAccount = (UserAccount) target;
-        if (userService.findByLogin(userAccount) != null) {
+        UserDTO userDTO = (UserDTO) target;
+        if (userService.findByLogin(userDTO.getLogin()) != null) {
             errors.rejectValue("login", "", "This login is already taken.");
         }
     }

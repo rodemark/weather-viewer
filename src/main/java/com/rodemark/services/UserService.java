@@ -25,14 +25,14 @@ public class UserService {
         userAccountRepository.save(userAccount);
     }
 
-    public UserAccount findByLogin(UserAccount userAccount){
-        return userAccountRepository.findByLogin(userAccount.getLogin()).orElse(null);
+    public UserAccount findByLogin(String login){
+        return userAccountRepository.findByLogin(login).orElse(null);
     }
 
     public UserAccount findByLoginAndPassword(UserAccount userAccount){
         String login = userAccount.getLogin();
         String password = userAccount.getPassword();
-        UserAccount foundedUserAccount = findByLogin(userAccount);
+        UserAccount foundedUserAccount = findByLogin(userAccount.getLogin());
 
         if (foundedUserAccount != null){
             String encryptPassword = foundedUserAccount.getPassword();
