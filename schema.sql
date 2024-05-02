@@ -1,4 +1,6 @@
--- create database weather_db;
+create database weather_db;
+
+\c weather_db;
 
 CREATE TABLE User_Accounts (
     ID SERIAL PRIMARY KEY,

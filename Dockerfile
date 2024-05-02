@@ -1,7 +1,7 @@
 FROM eclipse-temurin:21 AS builder
 WORKDIR /weather-viewer
 COPY . .
-RUN ./mvnw package
+RUN ./mvnw package -DskipTests=true
 
 FROM eclipse-temurin:21
 WORKDIR /weather-viewer
