@@ -10,18 +10,12 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
-    networks:
-      - my-network
 
-  spring-boot-app:
-    build: # path to app directory
+  weather-viewer:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     depends_on:
       - postgres
-    networks:
-      - my-network
-
-networks:
-  my-network:
-    driver: bridge

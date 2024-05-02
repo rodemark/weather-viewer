@@ -1,3 +1,5 @@
+-- create database weather_db;
+
 CREATE TABLE User_Accounts (
     ID SERIAL PRIMARY KEY,
     login VARCHAR UNIQUE,
