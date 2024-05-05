@@ -8,14 +8,14 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
-@Table(name = "user_accounts")
+@Table(name = "users")
 @Entity
 @Getter
 @Setter
-public class UserAccount extends BaseEntity{
+public class User extends BaseEntity{
     @NotBlank
-    @Column(name = "login")
-    private String login;
+    @Column(name = "email")
+    private String email;
 
     @NotBlank
     @Column(name = "password")

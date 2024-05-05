@@ -2,7 +2,7 @@ package com.rodemark.services;
 
 import com.rodemark.api.models.WeatherFromApi;
 import com.rodemark.models.Location;
-import com.rodemark.models.UserAccount;
+import com.rodemark.models.User;
 import com.rodemark.repositories.LocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,18 +20,18 @@ public class LocationService {
     }
 
     @Transactional
-    public void saveLocation(WeatherFromApi weatherFromApi, UserAccount userAccount){
+    public void saveLocation(WeatherFromApi weatherFromApi, User user){
         Location location = new Location();
         location.setName(weatherFromApi.getNameOfCity());
         location.setLongitude(weatherFromApi.getCoordinates().getLongitude());
         location.setLatitude(weatherFromApi.getCoordinates().getLatitude());
-        location.setUserAccount(userAccount);
+        location.setUser(user);
 
         locationRepository.save(location);
     }
 
     @Transactional
-    public void deleteLocation(WeatherFromApi weatherFromApi, UserAccount userAccount){
+    public void deleteLocation(WeatherFromApi weatherFromApi, User user){
         double longitude = weatherFromApi.getCoordinates().getLongitude();
         double latitude = weatherFromApi.getCoordinates().getLatitude();
         String name = weatherFromApi.getNameOfCity();
@@ -39,9 +39,9 @@ public class LocationService {
         System.out.println("Attempting to delete location: " + name + ", Latitude: " + latitude + ", Longitude: " + longitude);
 
         // Проверяем, существует ли местоположение перед удалением
-        List<Location> locationsToDelete = locationRepository.findByUserAccountAndLongitudeAndLatitudeAndName(userAccount, longitude, latitude, name);
+        List<Location> locationsToDelete = locationRepository.findByUserAndLongitudeAndLatitudeAndName(user, longitude, latitude, name);
         if(locationsToDelete != null && !locationsToDelete.isEmpty()) {
-            locationRepository.deleteByUserAccountAndLongitudeAndLatitudeAndName(userAccount, longitude, latitude, name);
+            locationRepository.deleteByUserAndLongitudeAndLatitudeAndName(user, longitude, latitude, name);
             System.out.println("Deleted location: " + name + ", Latitude: " + latitude + ", Longitude: " + longitude);
         } else {
             System.out.println("Location not found for deletion");
@@ -49,8 +49,8 @@ public class LocationService {
     }
 
 
-    public List<Location> getLocations(UserAccount userAccount){
-        return locationRepository.findByUserAccount(userAccount);
+    public List<Location> getLocations(User user){
+        return locationRepository.findByUser(user);
     }
 
 }

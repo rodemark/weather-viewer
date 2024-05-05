@@ -1,7 +1,7 @@
 package com.rodemark.validators;
 
 import com.rodemark.DTO.UserDTO;
-import com.rodemark.models.UserAccount;
+import com.rodemark.models.User;
 import com.rodemark.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,14 +19,14 @@ public class UserValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return UserAccount.class.isAssignableFrom(clazz);
+        return User.class.isAssignableFrom(clazz);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
         UserDTO userDTO = (UserDTO) target;
-        if (userService.findByLogin(userDTO.getLogin()) != null) {
-            errors.rejectValue("login", "", "This login is already taken.");
+        if (userService.findByEmail(userDTO.getEmail()) != null) {
+            errors.rejectValue("email", "", "This email is already taken.");
         }
     }
 

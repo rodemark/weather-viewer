@@ -26,5 +26,5 @@ public class Location extends BaseEntity{
 
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id")
-    private UserAccount userAccount;
+    private User user;
 }
