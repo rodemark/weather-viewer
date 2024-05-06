@@ -1,7 +1,7 @@
 package com.rodemark.controllers;
 
 import com.rodemark.api.ApiService;
-import com.rodemark.api.models.Weather;
+import com.rodemark.api.others.WeatherRedesigned;
 import com.rodemark.models.Location;
 import com.rodemark.models.User;
 import com.rodemark.services.LocationService;
@@ -31,14 +31,15 @@ public class WeatherController {
 
     @GetMapping("/search")
     public String showFoundCity(@RequestParam("cityName") String cityName, Model model) {
-        Weather weather = apiService.getWeatherByName(cityName);
-        model.addAttribute("weather", weather);
+        WeatherRedesigned weatherRedesigned = apiService.getWeatherByName(cityName);
+
+        model.addAttribute("weather", weatherRedesigned);
         model.addAttribute("user", userService.getCurrentUser());
 
         Location location = new Location();
-        location.setName(weather.getNameOfCity());
-        location.setLatitude(weather.getCoordinates().getLatitude());
-        location.setLongitude(weather.getCoordinates().getLongitude());
+        location.setName(weatherRedesigned.getNameOfCity());
+        location.setLatitude(weatherRedesigned.getCoord().getLat());
+        location.setLongitude(weatherRedesigned.getCoord().getLon());
         location.setUser(userService.getCurrentUser());
 
         if(locationService.findByUserAndLongitudeAndLatitudeAndName(location.getUser(), location.getLongitude(),

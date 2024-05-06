@@ -53,8 +53,8 @@
                 <div class="card-footer d-flex justify-content-center">
                     <form th:unless="${locationAlreadyAdded}" action="/addLocation" method="post" th:object="${location}">
                         <input type="hidden" name="name" th:value="${weather.nameOfCity}">
-                        <input type="hidden" name="latitude" th:value="${weather.coordinates.latitude}">
-                        <input type="hidden" name="longitude" th:value="${weather.coordinates.longitude}">
+                        <input type="hidden" name="latitude" th:value="${weather.coord.lat}">
+                        <input type="hidden" name="longitude" th:value="${weather.coord.lon}">
                         <input type="hidden" name="user" th:value="${user.id}">
                         <button type="submit" class="btn btn-outline-success">Add to Favorites</button>
                     </form>

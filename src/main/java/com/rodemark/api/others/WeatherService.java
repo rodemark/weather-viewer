@@ -1,25 +1,24 @@
-package com.rodemark.api;
+package com.rodemark.api.others;
 
 
-import com.rodemark.api.models.Weather;
-import com.rodemark.api.models.WeatherFromApi;
+import com.rodemark.api.currentWeather.WeatherData;
 
 public class WeatherService {
 
-    public static Weather weatherTransfer(WeatherFromApi weatherFromApi){
-        Weather weather = new Weather();
+    public static WeatherRedesigned weatherTransfer(WeatherData weatherData){
+        WeatherRedesigned weatherRedesigned = new WeatherRedesigned();
 
-        weather.setCoordinates(weatherFromApi.getCoordinates());
-        weather.setDescription(weatherFromApi.getDescription());
-        weather.setCountry(weatherFromApi.getCountry());
-        weather.setNameOfCity(weatherFromApi.getNameOfCity());
-        weather.setTemp(conversionTemperature(weatherFromApi.getTemp()));
-        weather.setPressure(conversionPressure(weatherFromApi.getPressure()));
-        weather.setWindDirection(translationToCardinalDirections(weatherFromApi.getWindDirection()));
-        weather.setWindSpeed((int) weatherFromApi.getWindSpeed());
-        weather.setHumidity((int) weatherFromApi.getHumidity());
+        weatherRedesigned.setCoord(weatherData.getCoord());
+        weatherRedesigned.setDescription(weatherData.getWeather()[0].getDescription());
+        weatherRedesigned.setCountry(weatherData.getSys().getCountry());
+        weatherRedesigned.setNameOfCity(weatherData.getName());
+        weatherRedesigned.setTemp(conversionTemperature(weatherData.getMain().getTemp()));
+        weatherRedesigned.setPressure(conversionPressure(weatherData.getMain().getPressure()));
+        weatherRedesigned.setWindDirection(translationToCardinalDirections(weatherData.getWind().getDeg()));
+        weatherRedesigned.setWindSpeed((int) weatherData.getWind().getSpeed());
+        weatherRedesigned.setHumidity(weatherData.getMain().getHumidity());
 
-        return weather;
+        return weatherRedesigned;
     }
 
     private static int conversionTemperature(double temp){

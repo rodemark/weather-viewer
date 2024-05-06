@@ -1,12 +1,13 @@
-package com.rodemark.api.models;
+package com.rodemark.api.others;
 
+import com.rodemark.api.currentWeather.Coord;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class Weather {
-    private Coordinates coordinates;
+public class WeatherRedesigned {
+    private Coord coord;
     private int temp;
     private int pressure;
     private int humidity;

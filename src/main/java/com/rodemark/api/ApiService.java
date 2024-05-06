@@ -1,11 +1,11 @@
 package com.rodemark.api;
 
-import com.rodemark.api.models.Coordinates;
-import com.rodemark.api.models.Weather;
-import com.rodemark.api.models.WeatherFromApi;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rodemark.api.currentWeather.Coord;
+import com.rodemark.api.currentWeather.WeatherData;
+import com.rodemark.api.others.WeatherRedesigned;
+import com.rodemark.api.others.WeatherService;
 import com.rodemark.models.Location;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -19,13 +19,15 @@ import java.util.List;
 
 @Service
 public class ApiService {
-    private final String API_KEY = "0006a3c6635f85a4481a1adf4a9d4c84";
+    private final String API_KEY = "e9e9403064fef65c39e72895e8f83b93";
     private final String API_URI = "https://api.openweathermap.org/data/2.5/weather";
 
-    public Weather getWeatherByName(String name){
+    public WeatherRedesigned getWeatherByName(String name){
         try {
             HttpResponse<String> response = getResponseByName(name);
-            return WeatherService.weatherTransfer(parseInformationAboutWeather(response));
+            String jsonAnswer = response.body();
+            ObjectMapper objectMapper = new ObjectMapper();
+            return WeatherService.weatherTransfer(objectMapper.readValue(jsonAnswer, WeatherData.class));
         }
         catch (Exception exception){
             exception.printStackTrace();
@@ -33,20 +35,12 @@ public class ApiService {
         return null;
     }
 
-    public Weather getWeatherByCoordinates(Coordinates coordinates) {
-        double latitude = coordinates.getLatitude();
-        double longitude = coordinates.getLongitude();
-
-        String requestURI = String.format("%s?lat=%s&lon=%s&appid=%s", API_URI, latitude, longitude, API_KEY);
+    public WeatherRedesigned getWeatherByCoordinates(Coord coord) {
         try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(requestURI))
-                    .GET()
-                    .build();
-
-            HttpClient client = HttpClient.newHttpClient();
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            return WeatherService.weatherTransfer(parseInformationAboutWeather(response));
+            HttpResponse<String> response = getResponseByCoord(coord);
+            String jsonAnswer = response.body();
+            ObjectMapper objectMapper = new ObjectMapper();
+            return WeatherService.weatherTransfer(objectMapper.readValue(jsonAnswer, WeatherData.class));
         }
         catch (Exception exception){
             exception.printStackTrace();
@@ -54,16 +48,16 @@ public class ApiService {
         return null;
     }
 
-    public List<Weather> getWeathersByLocations(List<Location> locationList){
+    public List<WeatherRedesigned> getWeathersByLocations(List<Location> locationList){
         try {
-            List<Weather> weathesList = new ArrayList<>();
+            List<WeatherRedesigned> weathesList = new ArrayList<>();
             for (Location location : locationList){
-                Coordinates coordinates = new Coordinates();
-                coordinates.setLatitude(location.getLatitude());
-                coordinates.setLongitude(location.getLongitude());
-                Weather weather = getWeatherByCoordinates(coordinates);
-                weather.setCoordinates(coordinates);
-                weathesList.add(weather);
+                Coord coord = new Coord();
+                coord.setLat(location.getLatitude());
+                coord.setLon(location.getLongitude());
+                WeatherRedesigned weatherRedesigned = getWeatherByCoordinates(coord);
+                weatherRedesigned.setCoord(coord);
+                weathesList.add(weatherRedesigned);
             }
             return weathesList;
         }
@@ -85,65 +79,18 @@ public class ApiService {
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
+    private HttpResponse<String> getResponseByCoord(Coord coord) throws URISyntaxException, IOException, InterruptedException {
+        double latitude = coord.getLat();
+        double longitude = coord.getLon();
 
-    private Coordinates parseCoordinatesFromResponse(HttpResponse<String> response){
-        Coordinates coordinates = new Coordinates();
-        try {
-            JSONObject jsonpObject = new JSONObject(response.body());
-            JSONObject jsonCoordinates = jsonpObject.getJSONObject("coord");
-            double latitude = jsonCoordinates.getDouble("lat");
-            double longitude = jsonCoordinates.getDouble("lon");
+        String requestURI = String.format("%s?lat=%s&lon=%s&appid=%s", API_URI, latitude, longitude, API_KEY);
 
-            coordinates.setLatitude(latitude);
-            coordinates.setLongitude(longitude);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(new URI(requestURI))
+                .GET()
+                .build();
 
-            return coordinates;
-        } catch (Exception exception){
-            exception.printStackTrace();
-            return null;
-        }
+        HttpClient client = HttpClient.newHttpClient();
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
-
-    private WeatherFromApi parseInformationAboutWeather(HttpResponse<String> response){
-        WeatherFromApi weatherFromApi = new WeatherFromApi();
-        Coordinates coordinates = parseCoordinatesFromResponse(response);
-        if (coordinates == null){
-            return null;
-        }
-        weatherFromApi.setCoordinates(coordinates);
-        JSONObject jsonpObject = new JSONObject(response.body());
-
-        JSONObject jsonObjectSecond = jsonpObject.getJSONObject("main");
-
-        double temp = jsonObjectSecond.getDouble("temp");
-        double pressure = jsonObjectSecond.getDouble("pressure");
-        double humidity = jsonObjectSecond.getDouble("humidity");
-
-        JSONArray weatherArray = jsonpObject.getJSONArray("weather");
-        jsonObjectSecond = weatherArray.getJSONObject(0);
-
-        String description = jsonObjectSecond.getString("description");
-
-        jsonObjectSecond = jsonpObject.getJSONObject("wind");
-        double windSpeed = jsonObjectSecond.getDouble("speed");
-        double windDirection = jsonObjectSecond.getDouble("deg");
-
-        jsonObjectSecond = jsonpObject.getJSONObject("sys");
-
-        String country = jsonObjectSecond.getString("country");
-
-        String nameOfCity = jsonpObject.getString("name");
-
-        weatherFromApi.setTemp(temp);
-        weatherFromApi.setPressure(pressure);
-        weatherFromApi.setHumidity(humidity);
-        weatherFromApi.setDescription(description);
-        weatherFromApi.setWindSpeed(windSpeed);
-        weatherFromApi.setWindDirection(windDirection);
-        weatherFromApi.setCountry(country);
-        weatherFromApi.setNameOfCity(nameOfCity);
-
-        return weatherFromApi;
-    }
-
 }

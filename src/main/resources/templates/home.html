@@ -33,30 +33,30 @@
 <div class="container">
     <div class="row">
         <!-- Iterate over the weathersList -->
-        <div th:each="weather : ${weathers}" class="col-md-6 mx-auto">
+        <div th:each="weatherRedesigned : ${weathers}" class="col-md-6 mx-auto">
             <div class="card mt-5">
                 <div class="card-header">
-                    <h5 class="card-title">Weather in <span th:text="${weather.nameOfCity + ', ' + weather.country}"></span></h5>
+                    <h5 class="card-title">Weather in <span th:text="${weatherRedesigned.nameOfCity + ', ' + weatherRedesigned.country}"></span></h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <p>Temperature: <span th:text="${weather.temp}"></span>°C</p>
-                            <p>Pressure: <span th:text="${weather.pressure}"></span> mm Hg</p>
-                            <p>Humidity: <span th:text="${weather.humidity}"></span>%</p>
+                            <p>Temperature: <span th:text="${weatherRedesigned.temp}"></span>°C</p>
+                            <p>Pressure: <span th:text="${weatherRedesigned.pressure}"></span> mm Hg</p>
+                            <p>Humidity: <span th:text="${weatherRedesigned.humidity}"></span>%</p>
                         </div>
                         <div class="col">
-                            <p>Wind Speed: <span th:text="${weather.windSpeed}"></span> m/s</p>
-                            <p>Wind Direction: <span th:text="${weather.windDirection}"></span></p>
-                            <p>Description: <span th:text="${weather.description}"></span></p>
+                            <p>Wind Speed: <span th:text="${weatherRedesigned.windSpeed}"></span> m/s</p>
+                            <p>Wind Direction: <span th:text="${weatherRedesigned.windDirection}"></span></p>
+                            <p>Description: <span th:text="${weatherRedesigned.description}"></span></p>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer d-flex justify-content-center">
                     <form action="/deleteLocation" method="post" th:object="${location}">
-                        <input type="hidden" name="name" th:value="${weather.nameOfCity}">
-                        <input type="hidden" name="latitude" th:value="${weather.coordinates.latitude}">
-                        <input type="hidden" name="longitude" th:value="${weather.coordinates.longitude}">
+                        <input type="hidden" name="name" th:value="${weatherRedesigned.nameOfCity}">
+                        <input type="hidden" name="latitude" th:value="${weatherRedesigned.coord.lat}">
+                        <input type="hidden" name="longitude" th:value="${weatherRedesigned.coord.lon}">
                         <input type="hidden" name="user" th:value="${user.id}">
 
                         <button type="submit" class="btn btn-outline-danger">Delete</button>

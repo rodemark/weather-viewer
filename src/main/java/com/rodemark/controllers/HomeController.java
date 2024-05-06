@@ -1,7 +1,7 @@
 package com.rodemark.controllers;
 
 import com.rodemark.api.ApiService;
-import com.rodemark.api.models.Weather;
+import com.rodemark.api.others.WeatherRedesigned;
 import com.rodemark.models.Location;
 import com.rodemark.models.User;
 import com.rodemark.services.LocationService;
@@ -30,9 +30,9 @@ public class HomeController {
     public String showHomePage(Model model) {
         User user = userService.getCurrentUser();
         List<Location> locations = locationService.findAll(user);
-        List<Weather> weathers = apiService.getWeathersByLocations(locations);
+        List<WeatherRedesigned> weatherRedesigneds = apiService.getWeathersByLocations(locations);
 
-        model.addAttribute("weathers", weathers);
+        model.addAttribute("weathers", weatherRedesigneds);
         model.addAttribute("user", user);
         model.addAttribute("location", new Location());
 

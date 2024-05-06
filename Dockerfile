@@ -1,9 +1,9 @@
 FROM eclipse-temurin:21 AS builder
-WORKDIR /weather-viewer
+WORKDIR /weatherRedesigned-viewer
 COPY . .
 RUN ./mvnw package -DskipTests=true
 
 FROM eclipse-temurin:21
-WORKDIR /weather-viewer
-COPY --from=builder /weather-viewer/target/*.jar weather-viewer-1.0.0.jar
-ENTRYPOINT ["java","-jar","weather-viewer-1.0.0.jar"]
+WORKDIR /weatherRedesigned-viewer
+COPY --from=builder /weatherRedesigned-viewer/target/*.jar weatherRedesigned-viewer-1.0.0.jar
+ENTRYPOINT ["java","-jar","weatherRedesigned-viewer-1.0.0.jar"]
