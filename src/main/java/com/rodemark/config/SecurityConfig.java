@@ -34,7 +34,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/registration").permitAll()
-                        .requestMatchers("/registration/confirm").permitAll()
                         .requestMatchers("/css/**", "/static/js/**","/img/**").permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/error")).permitAll()
                         .anyRequest().authenticated()

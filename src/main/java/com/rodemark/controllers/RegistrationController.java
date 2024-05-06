@@ -6,6 +6,7 @@ import com.rodemark.services.UserService;
 import com.rodemark.validators.UserValidator;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,11 +18,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class RegistrationController {
     private final UserService userService;
     private final UserValidator userValidator;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public RegistrationController(UserService userService, UserValidator userValidator) {
+    public RegistrationController(UserService userService, UserValidator userValidator, PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.userValidator = userValidator;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/registration")
@@ -48,7 +51,7 @@ public class RegistrationController {
 
         User user = new User();
         user.setEmail(userDTO.getEmail());
-        user.setPassword(userDTO.getPassword());
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 
         userService.save(user);
         return "redirect:/login";
