@@ -1,4 +1,4 @@
-package com.rodemark.api.currentWeather;
+package com.rodemark.api.general;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,9 +1,11 @@
 package com.rodemark.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rodemark.api.currentWeather.Coord;
-import com.rodemark.api.currentWeather.WeatherData;
-import com.rodemark.api.others.WeatherRedesigned;
+import com.rodemark.api.general.Coord;
+import com.rodemark.api.currentWeather.WeatherDataCurrent;
+import com.rodemark.api.forecastWeather.WeatherDataForecast;
+import com.rodemark.api.others.WeatherCurrent;
+import com.rodemark.api.others.WeatherDaily;
 import com.rodemark.api.others.WeatherService;
 import com.rodemark.models.Location;
 import org.springframework.stereotype.Service;
@@ -20,14 +22,15 @@ import java.util.List;
 @Service
 public class ApiService {
     private final String API_KEY = "e9e9403064fef65c39e72895e8f83b93";
-    private final String API_URI = "https://api.openweathermap.org/data/2.5/weather";
+    private final String API_URI_CURRENT = "https://api.openweathermap.org/data/2.5/weather";
+    private final String API_URI_FORECAST = "https://api.openweathermap.org/data/2.5/forecast";
 
-    public WeatherRedesigned getWeatherByName(String name){
+    public WeatherCurrent getCurrentWeatherByName(String name){
         try {
-            HttpResponse<String> response = getResponseByName(name);
+            HttpResponse<String> response = getCurrentResponseByName(name);
             String jsonAnswer = response.body();
             ObjectMapper objectMapper = new ObjectMapper();
-            return WeatherService.weatherTransfer(objectMapper.readValue(jsonAnswer, WeatherData.class));
+            return WeatherService.toWeatherCurrentFromWeatherDataCurrent(objectMapper.readValue(jsonAnswer, WeatherDataCurrent.class));
         }
         catch (Exception exception){
             exception.printStackTrace();
@@ -35,12 +38,12 @@ public class ApiService {
         return null;
     }
 
-    public WeatherRedesigned getWeatherByCoordinates(Coord coord) {
+    public WeatherCurrent getCurrentWeatherByCoordinates(Coord coord) {
         try {
-            HttpResponse<String> response = getResponseByCoord(coord);
+            HttpResponse<String> response = getResponseByCoord(coord, API_URI_CURRENT);
             String jsonAnswer = response.body();
             ObjectMapper objectMapper = new ObjectMapper();
-            return WeatherService.weatherTransfer(objectMapper.readValue(jsonAnswer, WeatherData.class));
+            return WeatherService.toWeatherCurrentFromWeatherDataCurrent(objectMapper.readValue(jsonAnswer, WeatherDataCurrent.class));
         }
         catch (Exception exception){
             exception.printStackTrace();
@@ -48,16 +51,16 @@ public class ApiService {
         return null;
     }
 
-    public List<WeatherRedesigned> getWeathersByLocations(List<Location> locationList){
+    public List<WeatherCurrent> getCurrentWeathersByLocations(List<Location> locationList){
         try {
-            List<WeatherRedesigned> weathesList = new ArrayList<>();
+            List<WeatherCurrent> weathesList = new ArrayList<>();
             for (Location location : locationList){
                 Coord coord = new Coord();
                 coord.setLat(location.getLatitude());
                 coord.setLon(location.getLongitude());
-                WeatherRedesigned weatherRedesigned = getWeatherByCoordinates(coord);
-                weatherRedesigned.setCoord(coord);
-                weathesList.add(weatherRedesigned);
+                WeatherCurrent weatherCurrent = getCurrentWeatherByCoordinates(coord);
+                weatherCurrent.setCoord(coord);
+                weathesList.add(weatherCurrent);
             }
             return weathesList;
         }
@@ -67,8 +70,22 @@ public class ApiService {
         return new ArrayList<>();
     }
 
-    private HttpResponse<String> getResponseByName(String name) throws URISyntaxException, IOException, InterruptedException {
-        String requestURI = String.format("%s?q=%s&appid=%s", API_URI, name, API_KEY);
+    public List<WeatherDaily> getWeatherForecast(Coord coord) {
+        try {
+            HttpResponse<String> response = getResponseByCoord(coord, API_URI_FORECAST);
+            String jsonAnswer = response.body();
+            ObjectMapper objectMapper = new ObjectMapper();
+            WeatherDataForecast weatherDataForecast = objectMapper.readValue(jsonAnswer, WeatherDataForecast.class);
+            return WeatherService.toWeatherDailyFromWeatherDataForecast(weatherDataForecast);
+        }
+        catch (Exception exception){
+            exception.printStackTrace();
+        }
+        return null;
+    }
+
+    private HttpResponse<String> getCurrentResponseByName(String name) throws URISyntaxException, IOException, InterruptedException {
+        String requestURI = String.format("%s?q=%s&appid=%s", API_URI_CURRENT, name, API_KEY);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI(requestURI))
@@ -79,7 +96,7 @@ public class ApiService {
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
-    private HttpResponse<String> getResponseByCoord(Coord coord) throws URISyntaxException, IOException, InterruptedException {
+    private HttpResponse<String> getResponseByCoord(Coord coord, String API_URI) throws URISyntaxException, IOException, InterruptedException {
         double latitude = coord.getLat();
         double longitude = coord.getLon();
 

@@ -1,7 +1,9 @@
 package com.rodemark.controllers;
 
 import com.rodemark.api.ApiService;
-import com.rodemark.api.others.WeatherRedesigned;
+import com.rodemark.api.general.Coord;
+import com.rodemark.api.others.WeatherCurrent;
+import com.rodemark.api.others.WeatherDaily;
 import com.rodemark.models.Location;
 import com.rodemark.models.User;
 import com.rodemark.services.LocationService;
@@ -15,6 +17,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 @Controller
 public class WeatherController {
@@ -30,17 +38,24 @@ public class WeatherController {
     }
 
     @GetMapping("/search")
-    public String showFoundCity(@RequestParam("cityName") String cityName, Model model) {
-        WeatherRedesigned weatherRedesigned = apiService.getWeatherByName(cityName);
+    public String showFoundCity(@RequestParam("cityName") String cityName, Model model, HttpSession session) {
+        WeatherCurrent weatherCurrent = apiService.getCurrentWeatherByName(cityName);
 
-        model.addAttribute("weather", weatherRedesigned);
-        model.addAttribute("user", userService.getCurrentUser());
+        if (weatherCurrent == null) {
+            session.setAttribute("error", "City not found!");
+            return "redirect:/home";
+        }
+
+        User user = (User) session.getAttribute("user");
+
+        model.addAttribute("weather", weatherCurrent);
+        model.addAttribute("user", user);
 
         Location location = new Location();
-        location.setName(weatherRedesigned.getNameOfCity());
-        location.setLatitude(weatherRedesigned.getCoord().getLat());
-        location.setLongitude(weatherRedesigned.getCoord().getLon());
-        location.setUser(userService.getCurrentUser());
+        location.setName(weatherCurrent.getNameOfCity());
+        location.setLatitude(weatherCurrent.getCoord().getLat());
+        location.setLongitude(weatherCurrent.getCoord().getLon());
+        location.setUser(user);
 
         if(locationService.findByUserAndLongitudeAndLatitudeAndName(location.getUser(), location.getLongitude(),
                 location.getLatitude(), location.getName()) != null) {
@@ -70,4 +85,21 @@ public class WeatherController {
         locationService.deleteByUserAndLongitudeAndLatitudeAndName(user, longitude, latitude, name);
         return "redirect:/home";
     }
+    @GetMapping("/forecast")
+    public String showWeatherForecast(@RequestParam("lat") Double lat, @RequestParam("lon") Double lon,
+                                      Model model, HttpSession session) {
+        Coord coord = new Coord();
+        coord.setLat(lat);
+        coord.setLon(lon);
+        List<WeatherDaily> weatherDailyList = apiService.getWeatherForecast(coord);
+        User user = (User) session.getAttribute("user");
+
+        Map<LocalDate, List<WeatherDaily>> dailyWeatherMap = weatherDailyList.stream()
+                .collect(Collectors.groupingBy(weather -> weather.getDateTime().toLocalDate(), TreeMap::new, Collectors.toList()));
+
+        model.addAttribute("dailyWeatherMap", dailyWeatherMap);
+        model.addAttribute("user", user);
+        return "weather-forecast";
+    }
+
 }

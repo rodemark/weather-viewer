@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Main {
+public class MainCurrent {
     private double temp;
     @JsonProperty("feels_like")
     private double feelsLike;

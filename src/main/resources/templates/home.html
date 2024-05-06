@@ -32,36 +32,55 @@
 </nav>
 <div class="container">
     <div class="row">
-        <!-- Iterate over the weathersList -->
-        <div th:each="weatherRedesigned : ${weathers}" class="col-md-6 mx-auto">
+        <div th:if="${error}" id="errorAlert" class="alert alert-warning" role="alert">
+            <span th:text="${error}"></span>
+        </div>
+        <div th:if="${#lists.isEmpty(weathers)}" class="col-md-6 mx-auto text-center mt-5">
+            <div style="text-align: center;">
+                <h6> Add your favorite locations </h6>
+            </div>
+
+        </div>
+        <div th:each="weatherCurrent : ${weathers}" class="col-md-6 mx-auto">
             <div class="card mt-5">
                 <div class="card-header">
-                    <h5 class="card-title">Weather in <span th:text="${weatherRedesigned.nameOfCity + ', ' + weatherRedesigned.country}"></span></h5>
+                    <div style="text-align: center;">
+                        <h5 class="card-title">Weather in <span th:text="${weatherCurrent.nameOfCity + ', ' + weatherCurrent.country}"></span></h5>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <p>Temperature: <span th:text="${weatherRedesigned.temp}"></span>°C</p>
-                            <p>Pressure: <span th:text="${weatherRedesigned.pressure}"></span> mm Hg</p>
-                            <p>Humidity: <span th:text="${weatherRedesigned.humidity}"></span>%</p>
+                            <p>Temperature: <span th:text="${weatherCurrent.temp}"></span>°C</p>
+                            <p>Pressure: <span th:text="${weatherCurrent.pressure}"></span> mm Hg</p>
+                            <p>Humidity: <span th:text="${weatherCurrent.humidity}"></span>%</p>
                         </div>
                         <div class="col">
-                            <p>Wind Speed: <span th:text="${weatherRedesigned.windSpeed}"></span> m/s</p>
-                            <p>Wind Direction: <span th:text="${weatherRedesigned.windDirection}"></span></p>
-                            <p>Description: <span th:text="${weatherRedesigned.description}"></span></p>
+                            <p>Wind Speed: <span th:text="${weatherCurrent.windSpeed}"></span> m/s</p>
+                            <p>Wind Direction: <span th:text="${weatherCurrent.windDirection}"></span></p>
+                            <p>Description: <span th:text="${weatherCurrent.description}"></span></p>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer d-flex justify-content-center">
-                    <form action="/deleteLocation" method="post" th:object="${location}">
-                        <input type="hidden" name="name" th:value="${weatherRedesigned.nameOfCity}">
-                        <input type="hidden" name="latitude" th:value="${weatherRedesigned.coord.lat}">
-                        <input type="hidden" name="longitude" th:value="${weatherRedesigned.coord.lon}">
-                        <input type="hidden" name="user" th:value="${user.id}">
+                    <form action="/forecast" method="get">
+                        <input type="hidden" name="lat" th:value="${weatherCurrent.coord.lat}">
+                        <input type="hidden" name="lon" th:value="${weatherCurrent.coord.lon}">
 
-                        <button type="submit" class="btn btn-outline-danger">Delete</button>
+                        <button type="submit" class="btn btn-outline-success">View the forecast</button>
                     </form>
                 </div>
+                <div class="card-footer d-flex justify-content-center">
+                    <form action="/deleteLocation" method="post" th:object="${location}">
+                        <input type="hidden" name="name" th:value="${weatherCurrent.nameOfCity}">
+                        <input type="hidden" name="latitude" th:value="${weatherCurrent.coord.lat}">
+                        <input type="hidden" name="longitude" th:value="${weatherCurrent.coord.lon}">
+                        <input type="hidden" name="user" th:value="${user.id}">
+
+                        <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                    </form>
+                </div>
+
             </div>
         </div>
     </div>
@@ -73,6 +92,15 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"></script>
 <!-- Подключение Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+<script src="../static/js/notification.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(event) {
+        hideNotification('errorAlert', 5000); // Для скрытия элемента 'errorAlert' через 5 секунд
+        hideNotification('alert', 5000); // Для скрытия элемента 'alert' через 5 секунд
+    });
+</script>
 
 </body>
 </html>

@@ -1,25 +1,69 @@
 package com.rodemark.api.others;
 
 
-import com.rodemark.api.currentWeather.WeatherData;
+import com.rodemark.api.currentWeather.WeatherDataCurrent;
+import com.rodemark.api.forecastWeather.WeatherDataForecast;
+import com.rodemark.api.forecastWeather.WeatherEntry;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WeatherService {
 
-    public static WeatherRedesigned weatherTransfer(WeatherData weatherData){
-        WeatherRedesigned weatherRedesigned = new WeatherRedesigned();
+    public static WeatherCurrent toWeatherCurrentFromWeatherDataCurrent(WeatherDataCurrent weatherDataCurrent){
+        WeatherCurrent weatherCurrent = new WeatherCurrent();
 
-        weatherRedesigned.setCoord(weatherData.getCoord());
-        weatherRedesigned.setDescription(weatherData.getWeather()[0].getDescription());
-        weatherRedesigned.setCountry(weatherData.getSys().getCountry());
-        weatherRedesigned.setNameOfCity(weatherData.getName());
-        weatherRedesigned.setTemp(conversionTemperature(weatherData.getMain().getTemp()));
-        weatherRedesigned.setPressure(conversionPressure(weatherData.getMain().getPressure()));
-        weatherRedesigned.setWindDirection(translationToCardinalDirections(weatherData.getWind().getDeg()));
-        weatherRedesigned.setWindSpeed((int) weatherData.getWind().getSpeed());
-        weatherRedesigned.setHumidity(weatherData.getMain().getHumidity());
+        weatherCurrent.setCoord(weatherDataCurrent.getCoord());
+        weatherCurrent.setDescription(weatherDataCurrent.getWeather()[0].getDescription());
+        weatherCurrent.setCountry(weatherDataCurrent.getSys().getCountry());
+        weatherCurrent.setNameOfCity(weatherDataCurrent.getName());
+        weatherCurrent.setTemp(conversionTemperature(weatherDataCurrent.getMain().getTemp()));
+        weatherCurrent.setPressure(conversionPressure(weatherDataCurrent.getMain().getPressure()));
+        weatherCurrent.setWindDirection(conversionWindDirections(weatherDataCurrent.getWind().getDeg()));
+        weatherCurrent.setWindSpeed((int) weatherDataCurrent.getWind().getSpeed());
+        weatherCurrent.setHumidity(weatherDataCurrent.getMain().getHumidity());
 
-        return weatherRedesigned;
+        return weatherCurrent;
     }
+
+    public static List<WeatherDaily> toWeatherDailyFromWeatherDataForecast(WeatherDataForecast weatherDataForecast) {
+        List<WeatherDaily> weatherDailyList = new ArrayList<>();
+
+        for (int i = 0; i < weatherDataForecast.getList().size(); i++) {
+            WeatherEntry weatherEntry = weatherDataForecast.getList().get(i);
+            WeatherDaily weatherDaily = new WeatherDaily();
+            weatherDaily.setDateTime(toLocalDateTime(weatherEntry.getDtTxt()));
+            weatherDaily.setTemp(conversionTemperature(weatherEntry.getMain().getTemp()));
+            weatherDaily.setPressure(conversionPressure(weatherEntry.getMain().getPressure()));
+            weatherDaily.setHumidity(weatherEntry.getMain().getHumidity());
+            weatherDaily.setDescription(weatherEntry.getWeather().getFirst().getDescription());
+            weatherDaily.setWindDirection(conversionWindDirections(weatherEntry.getWind().getDeg()));
+            weatherDaily.setWindSpeed((int) weatherEntry.getWind().getSpeed());
+            weatherDaily.setNameOfCity(weatherDataForecast.getCity().getName());
+            weatherDaily.setCountry(weatherDataForecast.getCity().getCountry());
+            weatherDaily.setCoord(weatherDataForecast.getCity().getCoord());
+
+            weatherDailyList.add(weatherDaily);
+        }
+
+        return weatherDailyList;
+    }
+
+
+    private static LocalDateTime toLocalDateTime(String dateTime) {
+        String[] parts = dateTime.split(" ");
+        String dateString = parts[0];
+        String timeString = parts[1];
+
+        LocalDate date = LocalDate.parse(dateString);
+        LocalTime time = LocalTime.parse(timeString);
+
+        return LocalDateTime.of(date, time);
+    }
+
 
     private static int conversionTemperature(double temp){
         temp -= 273;
@@ -32,7 +76,7 @@ public class WeatherService {
         return (int) Math.round(pressure * k);
     }
 
-    private static String translationToCardinalDirections(double deg) {
+    private static String conversionWindDirections(double deg) {
         if ((deg >= 11.25 && deg < 33.75) || (deg >= 348.75 && deg <= 360)) {
             return "North-Northeast";
         } else if (deg >= 33.75 && deg < 56.25) {

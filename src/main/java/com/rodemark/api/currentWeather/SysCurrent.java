@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Sys {
+public class SysCurrent {
     private int type;
     private int id;
     private String country;

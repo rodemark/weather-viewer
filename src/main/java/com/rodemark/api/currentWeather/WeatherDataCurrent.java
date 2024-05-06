@@ -1,21 +1,25 @@
 package com.rodemark.api.currentWeather;
 
+import com.rodemark.api.general.Clouds;
+import com.rodemark.api.general.Coord;
+import com.rodemark.api.general.Weather;
+import com.rodemark.api.general.Wind;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class WeatherData {
+public class WeatherDataCurrent {
     private Coord coord;
     private Weather[] weather;
     private String base;
-    private Main main;
+    private MainCurrent main;
     private int visibility;
     private Wind wind;
-    private Rain rain;
+    private RainCurrent rain;
     private Clouds clouds;
     private long dt;
-    private Sys sys;
+    private SysCurrent sys;
     private int timezone;
     private int id;
     private String name;

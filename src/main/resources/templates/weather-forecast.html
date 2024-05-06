@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>Weather Forecast</title>
+</head>
+<body>
+<nav class="navbar navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+            <img src="/img/logo.png" alt="" width="30" height="30" class="d-inline-block align-text-top">
+            Weather Service
+        </a>
+        <form class="d-flex mx-auto" action="/search" method="get">
+            <input class="form-control me-3" type="search" id="cityName" name="cityName" placeholder="Search" aria-label="Search" required>
+            <button type="submit" class="btn btn-outline-success">Search</button>
+        </form>
+
+        <div class="dropdown">
+            <a class="btn dropdown-toggle" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" th:text="${user.email}"></a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <li><a class="dropdown-item" href="/settings">Настройки</a></li>
+                <li><a class="dropdown-item" href="/logout">Выйти</a></li>
+            </ul>
+        </div>
+
+    </div>
+</nav>
+
+<div class="container">
+    <!-- Iterate over the dailyWeatherMap -->
+    <div class="row">
+        <div th:each="entry : ${dailyWeatherMap}" class="col-md-6 mx-auto">
+            <!-- entry.getKey() содержит дату, entry.getValue() содержит список WeatherDaily для этой даты -->
+            <div class="even-row-color-md-6">
+                <div class="card mt-5">
+                    <div class="card-header">
+                        <div style="text-align: center;">
+                            <h5 class="card-title">Weather in <span th:text="${entry.getValue()[0].nameOfCity + ', ' + entry.getValue()[0].country}"></span></h5>
+                            <h6 class="card-title"><span th:text="${#temporals.format(entry.getKey(), 'dd.MM.yyyy')}"></span></h6>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Iterate over the WeatherDaily list for this day -->
+                        <div th:each="weather : ${entry.getValue()}">
+                            <!-- Show time as a header -->
+                            <hr />
+                            <h6 class="card-title" style="text-align: center;"><span th:text="${#temporals.format(weather.dateTime, 'HH:mm')}"></span></h6>
+                            <hr />
+                            <div class="row">
+                                <div class="col">
+                                    <p>Temperature: <span th:text="${weather.temp}"></span>°C</p>
+                                    <p>Pressure: <span th:text="${weather.pressure}"></span> mm Hg</p>
+                                    <p>Humidity: <span th:text="${weather.humidity}"></span>%</p>
+                                </div>
+                                <div class="col">
+                                    <p>Wind Speed: <span th:text="${weather.windSpeed}"></span> m/s</p>
+                                    <p>Wind Direction: <span th:text="${weather.windDirection}"></span></p>
+                                    <p>Description: <span th:text="${weather.description}"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+</body>
+</html>

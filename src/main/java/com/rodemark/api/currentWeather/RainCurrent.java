@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Rain {
+public class RainCurrent {
     @JsonProperty("1h")
     private double oneHour;
 }
