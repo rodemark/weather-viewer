@@ -22,7 +22,6 @@ public class WeatherService {
         return weather;
     }
 
-
     private static int conversionTemperature(double temp){
         temp -= 273;
 
@@ -69,6 +68,4 @@ public class WeatherService {
             return "North";
         }
     }
-
-
 }

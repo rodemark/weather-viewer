@@ -19,13 +19,13 @@ import java.util.List;
 
 @Service
 public class ApiService {
-    private final String API_KEY = "API_KEY";
+    private final String API_KEY = "0006a3c6635f85a4481a1adf4a9d4c84";
     private final String API_URI = "https://api.openweathermap.org/data/2.5/weather";
 
-    public WeatherFromApi getWeatherByName(String name){
+    public Weather getWeatherByName(String name){
         try {
             HttpResponse<String> response = getResponseByName(name);
-            return parseInformationAboutWeather(response);
+            return WeatherService.weatherTransfer(parseInformationAboutWeather(response));
         }
         catch (Exception exception){
             exception.printStackTrace();
@@ -33,7 +33,7 @@ public class ApiService {
         return null;
     }
 
-    public WeatherFromApi getWeatherByCoordinates(Coordinates coordinates) {
+    public Weather getWeatherByCoordinates(Coordinates coordinates) {
         double latitude = coordinates.getLatitude();
         double longitude = coordinates.getLongitude();
 
@@ -46,7 +46,7 @@ public class ApiService {
 
             HttpClient client = HttpClient.newHttpClient();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            return parseInformationAboutWeather(response);
+            return WeatherService.weatherTransfer(parseInformationAboutWeather(response));
         }
         catch (Exception exception){
             exception.printStackTrace();
@@ -61,7 +61,7 @@ public class ApiService {
                 Coordinates coordinates = new Coordinates();
                 coordinates.setLatitude(location.getLatitude());
                 coordinates.setLongitude(location.getLongitude());
-                Weather weather = WeatherService.weatherTransfer(getWeatherByCoordinates(coordinates));
+                Weather weather = getWeatherByCoordinates(coordinates);
                 weather.setCoordinates(coordinates);
                 weathesList.add(weather);
             }

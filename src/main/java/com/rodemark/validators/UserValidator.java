@@ -4,6 +4,8 @@ import com.rodemark.DTO.UserDTO;
 import com.rodemark.models.User;
 import com.rodemark.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -34,5 +36,14 @@ public class UserValidator implements Validator {
         if (!password.equals(confirmPassword)){
             errors.rejectValue("password", "", "Passwords are not the same.");
         }
+    }
+
+    public boolean isAuthenticated() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || AnonymousAuthenticationToken.class.
+                isAssignableFrom(authentication.getClass())) {
+            return false;
+        }
+        return authentication.isAuthenticated();
     }
 }

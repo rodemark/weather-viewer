@@ -12,7 +12,7 @@
 <nav class="navbar navbar-light bg-light">
     <div class="container-fluid">
         <a class="navbar-brand" href="/">
-            <img src="/static/logo.png" alt="" width="30" height="24" class="d-inline-block align-text-top">
+            <img src="/img/logo.png" alt="" width="30" height="24" class="d-inline-block align-text-top">
             Weather Service
         </a>
         <form class="d-flex mx-auto" action="/search" method="get">
@@ -20,7 +20,7 @@
             <button type="submit" class="btn btn-outline-success">Search</button>
         </form>
 
-        <div class="navbar-text me-2"> <span th:text="${login}"></span></div>
+        <div class="navbar-text me-2"> <span th:text="${user.email}"></span></div>
 
         <form class="d-flex ms-auto" action="/logout" method="get">
             <button type="submit" class="btn btn-outline-dark me-2">Log out</button>
@@ -51,14 +51,16 @@
                     </div>
                 </div>
                 <div class="card-footer d-flex justify-content-center">
-                    <form action="/locations/add" method="post">
-                        <input type="hidden" name="cityName" th:value="${weather.nameOfCity}">
+                    <form th:unless="${locationAlreadyAdded}" action="/addLocation" method="post" th:object="${location}">
+                        <input type="hidden" name="name" th:value="${weather.nameOfCity}">
                         <input type="hidden" name="latitude" th:value="${weather.coordinates.latitude}">
                         <input type="hidden" name="longitude" th:value="${weather.coordinates.longitude}">
-
+                        <input type="hidden" name="user" th:value="${user.id}">
                         <button type="submit" class="btn btn-outline-success">Add to Favorites</button>
                     </form>
+                    <p th:if="${locationAlreadyAdded}">Location already added</p>
                 </div>
+
             </div>
         </div>
     </div>
