@@ -4,7 +4,6 @@ import com.rodemark.DTO.PasswordDTO;
 import com.rodemark.models.User;
 import com.rodemark.services.UserService;
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -36,7 +35,7 @@ public class SettingsController {
     }
 
     @PostMapping("/changePassword")
-    public String changePassword(@ModelAttribute("passwordDTO") @Valid PasswordDTO passwordDTO, Model model, HttpSession session) {
+    public String changePassword(@ModelAttribute("passwordDTO") PasswordDTO passwordDTO, Model model, HttpSession session) {
         User user = (User) session.getAttribute("user");
 
         model.addAttribute("user", user);

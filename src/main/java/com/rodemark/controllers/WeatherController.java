@@ -9,7 +9,6 @@ import com.rodemark.models.User;
 import com.rodemark.services.LocationService;
 import com.rodemark.services.UserService;
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -70,13 +69,13 @@ public class WeatherController {
     }
 
     @PostMapping("/addLocation")
-    public String addLocation(@ModelAttribute @Valid Location location, Model model, HttpSession session) {
+    public String addLocation(@ModelAttribute Location location, Model model, HttpSession session) {
         locationService.saveLocation(location);
         return "redirect:/home";
     }
 
     @PostMapping("/deleteLocation")
-    public String deleteLocation(@ModelAttribute @Valid Location location) {
+    public String deleteLocation(@ModelAttribute Location location) {
         double longitude = location.getLongitude();
         double latitude = location.getLatitude();
         String name = location.getName();

@@ -4,7 +4,6 @@ import com.rodemark.DTO.UserDTO;
 import com.rodemark.models.User;
 import com.rodemark.services.UserService;
 import com.rodemark.validators.UserValidator;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -34,7 +33,7 @@ public class RegistrationController {
     }
 
     @PostMapping("/registration")
-    public String processRegistration(@ModelAttribute("userDTO") @Valid UserDTO userDTO,
+    public String processRegistration(@ModelAttribute("userDTO") UserDTO userDTO,
                                       BindingResult bindingResult, Model model) {
 
         userValidator.validatePassword(userDTO.getPassword(), userDTO.getConfirmPassword(), bindingResult);
