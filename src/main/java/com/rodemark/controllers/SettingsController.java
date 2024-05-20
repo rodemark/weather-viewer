@@ -56,6 +56,7 @@ public class SettingsController {
         userService.save(user);
         session.setAttribute("alert", "You successfully changed your password!");
 
+        session.removeAttribute("user");
         session.setAttribute("user", user);
 
         return "redirect:/settings";
